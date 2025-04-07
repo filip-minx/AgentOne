@@ -2,10 +2,10 @@
 {
     internal interface IAgent
     {
-        List<ISensor> Sensors { get; }
-
-        List<IActuator> Actuators { get; }
-
         public Task ExecuteAsync(CancellationToken cancellationToken);
+
+        public List<ISensor> Sensors { get; }
+
+        public List<IActuator> Actuators { get; }
     }
 }

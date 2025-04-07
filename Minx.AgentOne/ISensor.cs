@@ -2,6 +2,8 @@
 {
     public interface ISensor
     {
+        public string Description { get; }
+
         /// <summary>
         /// Gets unprocessed sensory data since the last call to this function.
         /// </summary>
