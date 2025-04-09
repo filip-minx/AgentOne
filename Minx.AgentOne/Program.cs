@@ -5,6 +5,7 @@ using OpenAI;
 using Minx.ZMesh;
 
 string lmStudioBaseDomain = "http://localhost:1234";
+
 var httpClient = new HttpClient()
 {
     Timeout = TimeSpan.FromMinutes(5)
@@ -16,16 +17,22 @@ IChatCompletionService openAiService = new OpenAIService(new OpenAiOptions()
     ApiKey = "lm-studio"
 }, httpClient);
 
-var zmesh = new ZMesh("localhost:10001", SystemMap.LoadFile("systemmap.yaml"));
+int port = NamedArguments.GetAs("Port", 10001);
+string name = NamedArguments.GetAs("Name", "AgentOne");
+
+var sysmap = SystemMap.LoadFile("systemmap.yaml");
+var zmesh = new ZMesh("localhost:" + port, sysmap);
 
 var brain = new Brain(openAiService);
 
-var agentName = "AgentOne";
+var agentName = name;
 var agent = new Agent(brain);
 
-agent.Actuators.Add(new MessageBoxActuator());
+agent.Actuators.Add(new MessageBoxActuator(zmesh));
 agent.Sensors.Add(new MessageBoxSensor(zmesh.At(agentName)));
 
 var cancellationTokenSource = new CancellationTokenSource();
+
+Console.WriteLine($"This is {name}");
 
 await Task.Run(() => agent.ExecuteAsync(cancellationTokenSource.Token), cancellationTokenSource.Token);

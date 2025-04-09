@@ -20,15 +20,12 @@ namespace Minx.AgentOne
             {
                 await TickAsync(cancellationToken);
 
-                // Wait for a short period before the next iteration
-                await Task.Delay(100); // Adjust the sleep duration as needed
+                await Task.Delay(100);
             }
         }
 
         private async Task TickAsync(CancellationToken cancellationToken)
         {
-            // Execute the agent's logic here
-            // For example, read sensor data and perform actions
             foreach (var sensor in Sensors)
             {
                 if (sensor.TryGetData(out var data))
