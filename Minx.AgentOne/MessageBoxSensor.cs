@@ -1,24 +1,34 @@
-﻿namespace Minx.AgentOne
+﻿using Minx.ZMesh;
+
+namespace Minx.AgentOne
 {
     public class MessageBoxSensor : ISensor
     {
-        private Message message;
+        private readonly ITypedMessageBox messageBox;
 
         public string ProcessingInstructions { get; set; } = "MessageBoxSensor";
 
         public string Description => "You can receive messages to your message box with your name. Other agents can send you messages.";
 
-        public bool TryGetData(out SensoryData data)
+        public MessageBoxSensor(ITypedMessageBox messageBox)
         {
-            data = message != null ? new MessageBoxSensoryData(message) : null;
-            message = null; // Reset the message after processing
-            return data != null;
+            this.messageBox = messageBox;
         }
 
-        public void AddMessage(Message message)
+        public bool TryGetData(out SensoryData data)
         {
-            // Simulate getting data from a message box
-            this.message = message;
+            Message message = null;
+            
+            if (messageBox.TryListen<Message>(m => message = m))
+            {
+                data = new MessageBoxSensoryData(message);
+                return true;
+            }
+            else
+            {
+                data = default;
+                return false;
+            }
         }
     }
 }

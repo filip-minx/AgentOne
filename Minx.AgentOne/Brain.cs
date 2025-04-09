@@ -82,7 +82,6 @@ Your available sensors are:
         {
             var sb = new StringBuilder();
 
-            
             foreach (var actuator in Actuators)
             {
                 sb.AppendLine($"- {actuator.GetType().Name}: {actuator.Description}");
@@ -95,6 +94,7 @@ Your available sensors are:
                     }
                 }
             }
+
             return sb.ToString();
         }
 
