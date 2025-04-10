@@ -19,7 +19,7 @@ namespace Minx.AgentOne
         {
             this.zMesh = zMesh;
         }
-        public string Description => "Allows sending of messages to a message box by its name.You can send messages to other agents.";
+        public string Description => "Allows sending of messages to a message box by its name. You can send messages to other agents.";
 
         public async Task ExecuteAsync(string functionName, Dictionary<string, string> parameters)
         {
