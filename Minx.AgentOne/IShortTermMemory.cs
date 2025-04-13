@@ -1,0 +1,9 @@
+﻿namespace Minx.AgentOne
+{
+    public interface IShortTermMemory
+    {
+        public void Remember(SensoryData data);
+
+        public List<SensoryData> Recall();
+    }
+}

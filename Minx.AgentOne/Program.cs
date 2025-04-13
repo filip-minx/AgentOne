@@ -24,9 +24,10 @@ var sysmap = SystemMap.LoadFile("systemmap.yaml");
 var zmesh = new ZMesh("localhost:" + port, sysmap);
 
 var brain = new Brain(openAiService);
+var shortTermMemory = new ShortTermMemory();
 
 var agentName = name;
-var agent = new Agent(brain);
+var agent = new Agent(brain, shortTermMemory);
 
 agent.Actuators.Add(new MessageBoxActuator(zmesh));
 agent.Sensors.Add(new MessageBoxSensor(zmesh.At(agentName)));

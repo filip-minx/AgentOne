@@ -5,10 +5,14 @@ namespace Minx.AgentOne
 {
     public class Agent : IAgent
     {
-        public Agent(IBrain brain)
+        private readonly IShortTermMemory shortTermMemory;
+
+        public Agent(IBrain brain, IShortTermMemory shortTermMemory)
         {
             Brain = brain;
+            this.shortTermMemory = shortTermMemory;
         }
+
         public IBrain Brain { get; }
         public List<ISensor> Sensors { get; } = new List<ISensor>();
 
@@ -30,8 +34,8 @@ namespace Minx.AgentOne
             {
                 if (sensor.TryGetData(out var data))
                 {
-                    var work = await Brain.Think(data, Actuators, Sensors);
-
+                    var work = await Brain.Think(data, Actuators, Sensors, shortTermMemory.Recall());
+                    shortTermMemory.Remember(data);
                     await ExecuteWorkAsync(work);
                 }
             }

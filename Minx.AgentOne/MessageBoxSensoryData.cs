@@ -16,8 +16,16 @@ You have received a message from an agent. The agent's name is within the <Sende
 The content of the message is within the <MessageContent></MessageContent> XML tags.
 <MessageContent>{TextData}</MessageContent>
 
-Think about the message carefully. Only respond to the Sender when the MessageContent is a question or if you are instructed to do so. Otherwise do not respond to the Sender.
+Think about the message carefully. Only respond to the Sender when the MessageContent is a question or if you are now or previously instructed to do so.
+Otherwise do not respond to the Sender.
+
 How do you want to react?";
+
+        public override string Recall =>
+$@"<Message>
+    <Sender>{Message.Sender}</Sender>
+    <MessageContent>{TextData}</MessageContent>
+</Message>";
 
         public override string TextData => Message.Text;
     }
