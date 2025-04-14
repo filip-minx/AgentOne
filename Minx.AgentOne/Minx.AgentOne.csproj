@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Betalgo.OpenAI" Version="8.7.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
     <PackageReference Include="Minx.ZMesh" Version="1.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>

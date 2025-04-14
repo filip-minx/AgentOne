@@ -13,7 +13,7 @@ namespace Minx.AgentOne
             this.chatCompletionService = chatCompletionService;
         }
 
-        public async Task<IList<ToolCall>> Think(SensoryData data, List<IActuator> availableActuators, List<ISensor> availableSensors, List<SensoryData> shortTermMemory)
+        public async Task<Thought> Think(SensoryData data, List<IActuator> availableActuators, List<ISensor> availableSensors, List<SensoryData> shortTermMemory)
         {
             Console.WriteLine("Thinking about the sensory data...");
 
@@ -56,21 +56,15 @@ The history of your sensory data is within the <Memory></Memory> XML tags. Think
                 Stream = false
             });
 
-            if (completionResult.Successful)
-            {
-                Console.WriteLine($"AI: {completionResult.Choices.First().Message.Content}");
-            }
-            else
-            {
-                Console.WriteLine("Error calling LM Studio.");
-                if (completionResult.Error != null)
-                {
-                    Console.WriteLine($"Error: {completionResult.Error.Message} (Code: {completionResult.Error.Code})");
-                }
-            }
-
             var calls = completionResult.Choices.First().Message.ToolCalls;
-            return calls ?? Array.Empty<ToolCall>();
+
+            return new Thought
+            {
+                Internal = completionResult.Successful
+                    ? completionResult.Choices.First().Message.Content
+                    : "Error in thought process. " + completionResult.Error,
+                ToolCalls = calls ?? Array.Empty<ToolCall>()
+            };
         }
 
         private string GetActuatorsInstructions(List<IActuator> availableActuators)

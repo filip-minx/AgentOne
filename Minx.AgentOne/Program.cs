@@ -26,11 +26,15 @@ var zmesh = new ZMesh("localhost:" + port, sysmap);
 var brain = new Brain(openAiService);
 var shortTermMemory = new ShortTermMemory();
 
-var agentName = name;
-var agent = new Agent(brain, shortTermMemory);
+var character = new AgentCharacter
+{
+    Name = name
+};
 
-agent.Actuators.Add(new MessageBoxActuator(zmesh));
-agent.Sensors.Add(new MessageBoxSensor(zmesh.At(agentName)));
+var agent = new Agent(brain, shortTermMemory, character);
+
+agent.Actuators.Add(new MessageBoxActuator(zmesh, character));
+agent.Sensors.Add(new MessageBoxSensor(zmesh.At(name)));
 
 var cancellationTokenSource = new CancellationTokenSource();
 

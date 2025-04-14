@@ -21,8 +21,8 @@ namespace Minx.AgentOne
             
             if (messageBox.TryListen<Message>(m => message = m))
             {
-                data = new MessageBoxSensoryData(message);
-                Console.WriteLine($"MessageBoxSensor: Received message from {message.Sender}: {message.Text}");
+                data = new MessageBoxSensoryData(message, this);
+
                 return true;
             }
             else

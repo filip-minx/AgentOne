@@ -2,9 +2,10 @@
 {
     public class MessageBoxSensoryData : SensoryData
     {
-        public MessageBoxSensoryData(Message message)
+        public MessageBoxSensoryData(Message message, ISensor sensor)
         {
             Message = message;
+            Sensor = sensor;
         }
 
         public Message Message { get; set; }
@@ -14,7 +15,7 @@
 You have received a message from an agent. The agent's name is within the <Sender></Sender> XML tags.
 <Sender>{Message.Sender}</Sender>.
 The content of the message is within the <MessageContent></MessageContent> XML tags.
-<MessageContent>{TextData}</MessageContent>
+<MessageContent>{Message.Text}</MessageContent>
 
 Think about the message carefully. Only respond to the Sender when the MessageContent is a question or if you are now or previously instructed to do so.
 Otherwise do not respond to the Sender.
@@ -24,9 +25,12 @@ How do you want to react?";
         public override string Recall =>
 $@"<Message>
     <Sender>{Message.Sender}</Sender>
-    <MessageContent>{TextData}</MessageContent>
+    <MessageContent>{Message.Text}</MessageContent>
 </Message>";
 
-        public override string TextData => Message.Text;
+        public override string ToString()
+        {
+            return $"Message from {Message.Sender}: {Message.Text}";
+        }
     }
 }

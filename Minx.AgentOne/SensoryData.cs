@@ -2,9 +2,9 @@
 {
     public abstract class SensoryData
     {
-        public abstract string ProcessingInstructions { get; }
+        public ISensor Sensor { get; set; }
 
-        public abstract string TextData { get; }
+        public abstract string ProcessingInstructions { get; }
 
         public abstract string Recall { get; }
     }

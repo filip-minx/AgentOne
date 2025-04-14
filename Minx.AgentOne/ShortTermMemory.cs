@@ -4,14 +4,16 @@
     {
         private Stack<SensoryData> memory = new Stack<SensoryData>();
 
-        public void Remember(SensoryData data)
+        public SensoryData Remember(SensoryData data)
         {
             memory.Push(data);
 
             if (memory.Count > 20) // Limit memory to the last 10 items
             {
-                memory.Pop();
+                return memory.Pop();
             }
+
+            return null;
         }
 
         public List<SensoryData> Recall()

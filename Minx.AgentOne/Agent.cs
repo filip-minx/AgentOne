@@ -6,11 +6,14 @@ namespace Minx.AgentOne
     public class Agent : IAgent
     {
         private readonly IShortTermMemory shortTermMemory;
+        private readonly AgentCharacter character;
 
-        public Agent(IBrain brain, IShortTermMemory shortTermMemory)
+        public Agent(IBrain brain, IShortTermMemory shortTermMemory, AgentCharacter character)
         {
             Brain = brain;
+
             this.shortTermMemory = shortTermMemory;
+            this.character = character;
         }
 
         public IBrain Brain { get; }
@@ -34,13 +37,43 @@ namespace Minx.AgentOne
             {
                 if (sensor.TryGetData(out var data))
                 {
-                    var work = await Brain.Think(data, Actuators, Sensors, shortTermMemory.Recall());
-                    shortTermMemory.Remember(data);
-                    await ExecuteWorkAsync(work);
+                    Console.WriteLine("------------------------------------------");
+                    Console.WriteLine($"Sensor {data.Sensor.GetType().Name} received data.");
+                    Console.WriteLine("Data: " + data.ToString());
+
+                    var thought = await Brain.Think(data, Actuators, Sensors, shortTermMemory.Recall());
+
+                    LogThought(thought);
+
+                    var forgottenMemory = shortTermMemory.Remember(data);
+                    if (forgottenMemory != null)
+                    {
+                        Console.WriteLine("Short term memory is full. Forgetting the oldest memory.");
+                    }
+
+                    await ExecuteWorkAsync(thought.ToolCalls);
+
+                    Console.WriteLine("------------------------------------------");
                 }
             }
 
             await Task.CompletedTask;
+        }
+
+        private void LogThought(Thought thought)
+        {
+            if (!string.IsNullOrEmpty(thought.Internal))
+            {
+                Console.WriteLine("Thought: " + thought.Internal);
+            }
+            
+            if (thought.ToolCalls.Any())
+            {
+                foreach (var toolCall in thought.ToolCalls)
+                {
+                    Console.WriteLine($"Tool Call: {toolCall.FunctionCall.Name} with arguments {toolCall.FunctionCall.Arguments}");
+                }
+            }
         }
 
         private async Task ExecuteWorkAsync(IList<ToolCall> work)

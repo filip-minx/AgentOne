@@ -2,7 +2,7 @@
 {
     public interface IShortTermMemory
     {
-        public void Remember(SensoryData data);
+        public SensoryData Remember(SensoryData data);
 
         public List<SensoryData> Recall();
     }
