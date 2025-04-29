@@ -18,7 +18,6 @@ The content of the message is within the <MessageContent></MessageContent> XML t
 <MessageContent>{Message.Text}</MessageContent>
 
 Think about the message carefully. Only respond to the Sender when the MessageContent is a question or if you are now or previously instructed to do so.
-Otherwise do not respond to the Sender.
 
 How do you want to react?";
 
@@ -26,6 +25,7 @@ How do you want to react?";
 $@"<Message>
     <Sender>{Message.Sender}</Sender>
     <MessageContent>{Message.Text}</MessageContent>
+    {Thought.Contextualize()}
 </Message>";
 
         public override string ToString()

@@ -51,7 +51,6 @@ The history of your sensory data is within the <Memory></Memory> XML tags. Think
                 // Model name often doesn't matter much for LM Studio if only one model is loaded,
                 // but it's good practice to include it. You might need to match what LM Studio expects.
                 Model = "local-model", // Or the specific model identifier if needed/known
-                Temperature = 0.7f,
                 Tools = tools,
                 Stream = false
             });

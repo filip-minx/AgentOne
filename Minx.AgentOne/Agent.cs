@@ -35,25 +35,34 @@ namespace Minx.AgentOne
         {
             foreach (var sensor in Sensors)
             {
-                if (sensor.TryGetData(out var data))
+                try
                 {
-                    Console.WriteLine("------------------------------------------");
-                    Console.WriteLine($"Sensor {data.Sensor.GetType().Name} received data.");
-                    Console.WriteLine("Data: " + data.ToString());
-
-                    var thought = await Brain.Think(data, Actuators, Sensors, shortTermMemory.Recall());
-
-                    LogThought(thought);
-
-                    var forgottenMemory = shortTermMemory.Remember(data);
-                    if (forgottenMemory != null)
+                    if (sensor.TryGetData(out var data))
                     {
-                        Console.WriteLine("Short term memory is full. Forgetting the oldest memory.");
+                        Console.WriteLine("------------------------------------------");
+                        Console.WriteLine($"Sensor {data.Sensor.GetType().Name} received data.");
+                        Console.WriteLine("Data: " + data.ToString());
+
+                        var thought = await Brain.Think(data, Actuators, Sensors, shortTermMemory.Recall());
+                        
+                        data.Thought = thought;
+                        
+                        LogThought(thought);
+
+                        var forgottenMemory = shortTermMemory.Remember(data);
+                        if (forgottenMemory != null)
+                        {
+                            Console.WriteLine("Short term memory is full. Forgetting the oldest memory.");
+                        }
+
+                        await ExecuteWorkAsync(thought.ToolCalls);
+
+                        Console.WriteLine("------------------------------------------");
                     }
-
-                    await ExecuteWorkAsync(thought.ToolCalls);
-
-                    Console.WriteLine("------------------------------------------");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error in sensor {sensor.GetType().Name}: {ex.Message}");
                 }
             }
 

@@ -2,15 +2,15 @@
 {
     public class ShortTermMemory : IShortTermMemory
     {
-        private Stack<SensoryData> memory = new Stack<SensoryData>();
+        private Queue<SensoryData> memory = new Queue<SensoryData>();
 
         public SensoryData Remember(SensoryData data)
         {
-            memory.Push(data);
+            memory.Enqueue(data);
 
             if (memory.Count > 20) // Limit memory to the last 10 items
             {
-                return memory.Pop();
+                return memory.Dequeue();
             }
 
             return null;

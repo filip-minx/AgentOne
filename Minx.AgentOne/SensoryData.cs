@@ -7,5 +7,7 @@
         public abstract string ProcessingInstructions { get; }
 
         public abstract string Recall { get; }
+
+        public Thought Thought { get; set; }
     }
 }
