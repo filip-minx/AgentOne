@@ -1,20 +1,21 @@
-﻿using Minx.AgentOne;
-using OpenAI.Interfaces;
-using OpenAI.Managers;
-using OpenAI;
+﻿using Betalgo.Ranul.OpenAI;
+using Betalgo.Ranul.OpenAI.Interfaces;
+using Betalgo.Ranul.OpenAI.Managers;
+using Minx.AgentOne;
 using Minx.ZMesh;
 
-string lmStudioBaseDomain = "http://localhost:1234";
+string lmStudioBaseDomain = "https://api.openai.com";
+//string lmStudioBaseDomain = "http://localhost:1234";
 
 var httpClient = new HttpClient()
 {
     Timeout = TimeSpan.FromMinutes(5)
 };
 
-IChatCompletionService openAiService = new OpenAIService(new OpenAiOptions()
+IChatCompletionService openAiService = new OpenAIService(new OpenAIOptions()
 {
     BaseDomain = lmStudioBaseDomain,
-    ApiKey = "lm-studio"
+    ApiKey = "..."
 }, httpClient);
 
 int port = NamedArguments.GetAs("Port", 10001);

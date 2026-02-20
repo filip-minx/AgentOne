@@ -8,7 +8,7 @@
         {
             memory.Enqueue(data);
 
-            if (memory.Count > 20) // Limit memory to the last 10 items
+            if (memory.Count > 200) // Limit memory to the last 10 items
             {
                 return memory.Dequeue();
             }

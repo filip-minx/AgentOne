@@ -1,6 +1,7 @@
-﻿using OpenAI.Interfaces;
-using OpenAI.ObjectModels.RequestModels;
+﻿using Betalgo.Ranul.OpenAI.Interfaces;
+using Betalgo.Ranul.OpenAI.ObjectModels.RequestModels;
 using System.Text;
+using static Betalgo.Ranul.OpenAI.ObjectModels.StaticValues.CompletionStatics;
 
 namespace Minx.AgentOne
 {
@@ -25,6 +26,7 @@ When you receive a query, first analyze whether external tools (such as APIs or 
 If so, generate a tool call using the predefined JSON schema that specifies the function name and parameters.
 Always include a dedicated internal reasoning section between `<think>` and `</think>` tags before and after any tool invocation. Ensure your response remains clear,
 logically structured, and concise. If no tool is required, proceed with your internal reasoning and respond directly.
+The text you generate can not be seen by anyone other than you. When you need to convey any information, use the available actuators.
 
 Your available actuators are within the <Actuators></Actuators> XML tags.
 <Actuators>
@@ -50,9 +52,10 @@ The history of your sensory data is within the <Memory></Memory> XML tags. Think
                 },
                 // Model name often doesn't matter much for LM Studio if only one model is loaded,
                 // but it's good practice to include it. You might need to match what LM Studio expects.
-                Model = "local-model", // Or the specific model identifier if needed/known
+                Model = "gpt-5", // Or the specific model identifier if needed/known
                 Tools = tools,
-                Stream = false
+                Stream = false,
+                ReasoningEffort = ReasoningEffort.Low,
             });
 
             var calls = completionResult.Choices.First().Message.ToolCalls;

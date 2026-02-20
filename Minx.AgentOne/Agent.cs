@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using OpenAI.ObjectModels.RequestModels;
+﻿using Betalgo.Ranul.OpenAI.ObjectModels.RequestModels;
+using Newtonsoft.Json;
 
 namespace Minx.AgentOne
 {

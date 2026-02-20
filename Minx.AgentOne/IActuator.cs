@@ -1,4 +1,5 @@
-﻿using OpenAI.ObjectModels.RequestModels;
+﻿
+using Betalgo.Ranul.OpenAI.ObjectModels.RequestModels;
 
 namespace Minx.AgentOne
 {
