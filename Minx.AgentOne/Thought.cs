@@ -8,6 +8,7 @@ namespace Minx.AgentOne
     {
         public string Internal { get; set; }
         public IList<ToolCall> ToolCalls { get; set; }
+        public float ImportanceScore { get; set; } = 0.0f;
 
         public string Contextualize()
         {

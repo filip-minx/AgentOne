@@ -59,13 +59,18 @@ The history of your sensory data is within the <Memory></Memory> XML tags. Think
             });
 
             var calls = completionResult.Choices.First().Message.ToolCalls;
+            var content = completionResult.Successful
+                ? completionResult.Choices.First().Message.Content
+                : "Error in thought process. " + completionResult.Error;
+
+            // Calculate importance score using heuristics
+            float importance = CalculateImportance(data, content, calls);
 
             return new Thought
             {
-                Internal = completionResult.Successful
-                    ? completionResult.Choices.First().Message.Content
-                    : "Error in thought process. " + completionResult.Error,
-                ToolCalls = calls ?? Array.Empty<ToolCall>()
+                Internal = content,
+                ToolCalls = calls ?? Array.Empty<ToolCall>(),
+                ImportanceScore = importance
             };
         }
 
@@ -110,6 +115,52 @@ The history of your sensory data is within the <Memory></Memory> XML tags. Think
             }
 
             return sb.ToString();
+        }
+
+        private float CalculateImportance(SensoryData data, string thoughtContent, IList<ToolCall> toolCalls)
+        {
+            float importance = 0.3f; // Base importance
+
+            var dataText = (data.ProcessingInstructions + " " + data.Recall).ToLowerInvariant();
+            var thoughtText = (thoughtContent ?? "").ToLowerInvariant();
+
+            // High importance indicators
+            if (ContainsAny(dataText, "remember", "important", "my name is", "i am", "goal", "objective", "mission"))
+            {
+                importance += 0.4f;
+            }
+
+            // Medium importance - tool calls indicate action
+            if (toolCalls != null && toolCalls.Any())
+            {
+                importance += 0.2f;
+            }
+
+            // Medium importance - questions or requests
+            if (dataText.Contains("?") || ContainsAny(dataText, "please", "can you", "could you", "help", "tell me"))
+            {
+                importance += 0.15f;
+            }
+
+            // Low importance - simple greetings/acknowledgments
+            if (ContainsAny(dataText, "hi", "hello", "hey", "thanks", "ok", "okay") && dataText.Length < 50)
+            {
+                importance -= 0.2f;
+            }
+
+            // Thought complexity indicates importance
+            if (thoughtText.Length > 200)
+            {
+                importance += 0.1f;
+            }
+
+            // Clamp to [0, 1]
+            return Math.Clamp(importance, 0.0f, 1.0f);
+        }
+
+        private bool ContainsAny(string text, params string[] keywords)
+        {
+            return keywords.Any(keyword => text.Contains(keyword));
         }
     }
 }
