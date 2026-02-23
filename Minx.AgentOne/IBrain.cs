@@ -2,6 +2,6 @@
 {
     public interface IBrain
     {
-        Task<Thought> Think(SensoryData data, List<IActuator> availableActuators, List<ISensor> availableSensors, List<SensoryData> shortTermMemory);
+        Task<Thought> Think(SensoryData data, List<IActuator> availableActuators, List<ISensor> availableSensors, List<Interaction> workingMemory);
     }
 }

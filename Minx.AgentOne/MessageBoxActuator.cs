@@ -24,13 +24,20 @@ namespace Minx.AgentOne
 
         public string Description => "Allows sending of messages to a message box by its name. You can send messages to other agents.";
 
-        public async Task ExecuteAsync(string functionName, Dictionary<string, string> parameters)
+        public async Task<ActionData> ExecuteAsync(string functionName, Dictionary<string, string> parameters)
         {
-            zMesh.At(parameters["MessageBoxName"]).Tell(new Message
+            var recipient = parameters["MessageBoxName"];
+            var messageContent = parameters["MessageContent"];
+
+            // Execute the action
+            zMesh.At(recipient).Tell(new Message
             {
                 Sender = agentCharacter.Name,
-                Text = parameters["MessageContent"]
+                Text = messageContent
             });
+
+            // Create and return the specific ActionData for this actuator
+            return new MessageBoxActionData(recipient, messageContent);
         }
 
         public List<ToolDefinition> GetToolDefinitions()

@@ -14,7 +14,7 @@ namespace Minx.AgentOne
             this.chatCompletionService = chatCompletionService;
         }
 
-        public async Task<Thought> Think(SensoryData data, List<IActuator> availableActuators, List<ISensor> availableSensors, List<SensoryData> shortTermMemory)
+        public async Task<Thought> Think(SensoryData data, List<IActuator> availableActuators, List<ISensor> availableSensors, List<Interaction> workingMemory)
         {
             Console.WriteLine("Thinking about the sensory data...");
 
@@ -52,10 +52,10 @@ Your available sensors are within the <Sensors></Sensors> XML tags.
 </Sensors>
 
 COMPLETE MEMORY:
-All of your sensory data and all actions you've taken are stored in your memory. The history of your sensory data is within the <Memory></Memory> XML tags.
-Think carefully about the previous sensory data and your past actions. Base your next decision on your complete memory, including temporal patterns.
+All of your interactions (sensory data received and actions taken) are stored in your memory. The history of your interactions is within the <Memory></Memory> XML tags.
+Think carefully about both what you have experienced and what actions you have taken. Base your next decision on your complete interaction history, including temporal patterns.
 <Memory>
-{GetShortTermMemoryInstructions(shortTermMemory)}
+{GetMemoryInstructions(workingMemory)}
 </Memory>
 ";
             var completionResult = await chatCompletionService.CreateCompletion(new ChatCompletionCreateRequest
@@ -120,11 +120,11 @@ Think carefully about the previous sensory data and your past actions. Base your
             return sb.ToString();
         }
 
-        private string GetShortTermMemoryInstructions(List<SensoryData> shortTermMemory)
+        private string GetMemoryInstructions(List<Interaction> workingMemory)
         {
             var sb = new StringBuilder();
 
-            foreach (var item in shortTermMemory)
+            foreach (var item in workingMemory)
             {
                 sb.AppendLine(item.Recall);
             }

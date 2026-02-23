@@ -44,6 +44,7 @@ var agent = new Agent(brain, shortTermMemory, longTermMemory, character);
 
 agent.Actuators.Add(new MessageBoxActuator(zmesh, character));
 agent.Sensors.Add(new MessageBoxSensor(zmesh.At(name)));
+agent.Sensors.Add(new TimeSensor(TimeSpan.FromSeconds(30))); // Time awareness every 30 seconds
 
 var cancellationTokenSource = new CancellationTokenSource();
 

@@ -20,13 +20,13 @@ namespace Minx.AgentOne
             }
         }
 
-        public Task RememberAsync(SensoryData data, float importance)
+        public Task RememberAsync(Interaction interaction, float importance)
         {
-            var embedding = GenerateMockEmbedding(data.Recall);
+            var embedding = GenerateMockEmbedding(interaction.Recall);
 
             var entry = new MemoryEntry
             {
-                Data = data,
+                Interaction = interaction,
                 Embedding = embedding,
                 Importance = importance,
                 Timestamp = DateTime.UtcNow
@@ -37,15 +37,15 @@ namespace Minx.AgentOne
                 memories.Add(entry);
             }
 
-            Console.WriteLine($"[LTM] Stored memory (importance: {importance:F2}): {TruncateText(data.Recall, 80)}");
+            Console.WriteLine($"[LTM] Stored memory (importance: {importance:F2}): {TruncateText(interaction.Recall, 80)}");
             return Task.CompletedTask;
         }
 
-        public Task<List<SensoryData>> RecallRelevantAsync(string query, int limit = 5)
+        public Task<List<Interaction>> RecallRelevantAsync(string query, int limit = 5)
         {
             if (string.IsNullOrWhiteSpace(query))
             {
-                return Task.FromResult(new List<SensoryData>());
+                return Task.FromResult(new List<Interaction>());
             }
 
             List<MemoryEntry> snapshot;
@@ -53,7 +53,7 @@ namespace Minx.AgentOne
             {
                 if (memories.Count == 0)
                 {
-                    return Task.FromResult(new List<SensoryData>());
+                    return Task.FromResult(new List<Interaction>());
                 }
                 snapshot = new List<MemoryEntry>(memories);
             }
@@ -75,17 +75,17 @@ namespace Minx.AgentOne
             Console.WriteLine($"[LTM] Recalled {rankedMemories.Count} relevant memories for query: {TruncateText(query, 60)}");
             foreach (var item in rankedMemories)
             {
-                Console.WriteLine($"  - Relevance: {item.Relevance:F3} (sim: {item.Similarity:F3}, imp: {item.Memory.Importance:F2}) - {TruncateText(item.Memory.Data.Recall, 60)}");
+                Console.WriteLine($"  - Relevance: {item.Relevance:F3} (sim: {item.Similarity:F3}, imp: {item.Memory.Importance:F2}) - {TruncateText(item.Memory.Interaction.Recall, 60)}");
             }
 
-            return Task.FromResult(rankedMemories.Select(x => x.Memory.Data).ToList());
+            return Task.FromResult(rankedMemories.Select(x => x.Memory.Interaction).ToList());
         }
 
-        public Task<List<SensoryData>> RecallAllAsync()
+        public Task<List<Interaction>> RecallAllAsync()
         {
             lock (lockObject)
             {
-                return Task.FromResult(memories.Select(m => m.Data).ToList());
+                return Task.FromResult(memories.Select(m => m.Interaction).ToList());
             }
         }
 
@@ -190,7 +190,7 @@ namespace Minx.AgentOne
 
         private class MemoryEntry
         {
-            public SensoryData Data { get; set; } = null!;
+            public Interaction Interaction { get; set; } = null!;
             public float[] Embedding { get; set; } = null!;
             public float Importance { get; set; }
             public DateTime Timestamp { get; set; }

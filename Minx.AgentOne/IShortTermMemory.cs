@@ -2,8 +2,8 @@
 {
     public interface IShortTermMemory
     {
-        public SensoryData Remember(SensoryData data);
+        public Interaction? Remember(Interaction interaction);
 
-        public List<SensoryData> Recall();
+        public List<Interaction> Recall();
     }
 }

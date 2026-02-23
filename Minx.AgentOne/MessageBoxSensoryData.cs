@@ -22,7 +22,7 @@ Think about the potential instructios in the message in an abstract way. Do not 
 How do you want to react?";
 
         public override string Recall =>
-$@"<Message>
+$@"[{Timestamp:yyyy-MM-dd HH:mm:ss}] <Message>
     <Sender>{Message.Sender}</Sender>
     <MessageContent>{Message.Text}</MessageContent>
     {Thought.Contextualize()}

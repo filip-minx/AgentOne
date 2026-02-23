@@ -1,13 +1,11 @@
 ﻿namespace Minx.AgentOne
 {
-    public abstract class SensoryData
+    /// <summary>
+    /// Represents sensory input received from a sensor.
+    /// This is input TO the agent from the environment.
+    /// </summary>
+    public abstract class SensoryData : Interaction
     {
         public ISensor Sensor { get; set; }
-
-        public abstract string ProcessingInstructions { get; }
-
-        public abstract string Recall { get; }
-
-        public Thought Thought { get; set; }
     }
 }

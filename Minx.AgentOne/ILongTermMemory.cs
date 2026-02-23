@@ -3,22 +3,22 @@ namespace Minx.AgentOne
     public interface ILongTermMemory
     {
         /// <summary>
-        /// Store a memory with importance score for later retrieval
+        /// Store an interaction (sensory data or action) with importance score for later retrieval
         /// </summary>
-        Task RememberAsync(SensoryData data, float importance);
+        Task RememberAsync(Interaction interaction, float importance);
 
         /// <summary>
-        /// Retrieve memories relevant to the given query using semantic similarity
+        /// Retrieve interactions relevant to the given query using semantic similarity
         /// </summary>
-        Task<List<SensoryData>> RecallRelevantAsync(string query, int limit = 5);
+        Task<List<Interaction>> RecallRelevantAsync(string query, int limit = 5);
 
         /// <summary>
-        /// Get all stored memories
+        /// Get all stored interactions
         /// </summary>
-        Task<List<SensoryData>> RecallAllAsync();
+        Task<List<Interaction>> RecallAllAsync();
 
         /// <summary>
-        /// Get count of stored memories
+        /// Get count of stored interactions
         /// </summary>
         int Count { get; }
     }

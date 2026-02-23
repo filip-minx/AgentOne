@@ -57,14 +57,15 @@ namespace Minx.AgentOne
                         var forgottenMemory = shortTermMemory.Remember(data);
                         if (forgottenMemory != null)
                         {
-                            Console.WriteLine("[STM] Short term memory is full. Forgetting the oldest memory.");
+                            Console.WriteLine("[STM] Short term memory full. Forgetting oldest interaction.");
                         }
 
-                        // Store ALL sensory data and actions in long-term memory
+                        // Store ALL sensory data in long-term memory
                         // The importance score is preserved for relevance ranking during recall
                         await longTermMemory.RememberAsync(data, thought.ImportanceScore);
-                        Console.WriteLine($"[Memory] Stored in long-term memory (importance: {thought.ImportanceScore:F2})");
+                        Console.WriteLine($"[Memory] Stored sensory input in long-term memory (importance: {thought.ImportanceScore:F2})");
 
+                        // Execute actions and store them explicitly in memory
                         await ExecuteWorkAsync(thought.ToolCalls);
 
                         Console.WriteLine("------------------------------------------");
@@ -79,14 +80,14 @@ namespace Minx.AgentOne
             await Task.CompletedTask;
         }
 
-        private async Task<List<SensoryData>> GetWorkingMemoryAsync(SensoryData currentData)
+        private async Task<List<Interaction>> GetWorkingMemoryAsync(SensoryData currentData)
         {
-            var working = new List<SensoryData>();
+            var working = new List<Interaction>();
 
-            // Add recent context from short-term memory
+            // Add recent context from short-term memory (includes both sensory data and actions)
             working.AddRange(shortTermMemory.Recall());
 
-            // Add relevant memories from long-term memory
+            // Add relevant interactions from long-term memory
             if (longTermMemory.Count > 0)
             {
                 var relevantMemories = await longTermMemory.RecallRelevantAsync(
@@ -131,11 +132,40 @@ namespace Minx.AgentOne
                 if (actuator != null)
                 {
                     var parameters = JsonConvert.DeserializeObject<Dictionary<string, string>>(toolCall.FunctionCall.Arguments);
-                    await actuator.ExecuteAsync(toolCall.FunctionCall.Name, parameters);
+
+                    // Execute the action and get the ActionData from the actuator
+                    var actionData = await actuator.ExecuteAsync(toolCall.FunctionCall.Name, parameters);
+
+                    // Store the action in memory
+                    await StoreActionInMemoryAsync(actionData);
                 }
             }
 
             await Task.CompletedTask;
+        }
+
+        private async Task StoreActionInMemoryAsync(ActionData actionData)
+        {
+            // Create a simple thought for the action (no additional reasoning needed)
+            var actionThought = new Thought
+            {
+                Internal = $"Executed action: {actionData.ActionName}",
+                ToolCalls = Array.Empty<ToolCall>(),
+                ImportanceScore = 0.7f // Actions are always important (increased from default 0.5)
+            };
+
+            actionData.Thought = actionThought;
+
+            // Store in short-term memory
+            var forgotten = shortTermMemory.Remember(actionData);
+            if (forgotten != null)
+            {
+                Console.WriteLine("[STM] Short term memory full while storing action. Forgot oldest interaction.");
+            }
+
+            // Store in long-term memory
+            await longTermMemory.RememberAsync(actionData, actionThought.ImportanceScore);
+            Console.WriteLine($"[Memory] Stored action '{actionData.ActionName}' in memory (importance: {actionThought.ImportanceScore:F2})");
         }
     }
 }

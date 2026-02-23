@@ -2,13 +2,13 @@
 {
     public class ShortTermMemory : IShortTermMemory
     {
-        private Queue<SensoryData> memory = new Queue<SensoryData>();
+        private Queue<Interaction> memory = new Queue<Interaction>();
 
-        public SensoryData Remember(SensoryData data)
+        public Interaction? Remember(Interaction interaction)
         {
-            memory.Enqueue(data);
+            memory.Enqueue(interaction);
 
-            if (memory.Count > 200) // Limit memory to the last 10 items
+            if (memory.Count > 200) // Limit memory to the last 200 items
             {
                 return memory.Dequeue();
             }
@@ -16,7 +16,7 @@
             return null;
         }
 
-        public List<SensoryData> Recall()
+        public List<Interaction> Recall()
         {
             return memory.ToList();
         }
