@@ -60,11 +60,10 @@ namespace Minx.AgentOne
                             Console.WriteLine("[STM] Short term memory is full. Forgetting the oldest memory.");
                         }
 
-                        // Store important memories in long-term memory
-                        if (thought.ImportanceScore >= 0.5f)
-                        {
-                            await longTermMemory.RememberAsync(data, thought.ImportanceScore);
-                        }
+                        // Store ALL sensory data and actions in long-term memory
+                        // The importance score is preserved for relevance ranking during recall
+                        await longTermMemory.RememberAsync(data, thought.ImportanceScore);
+                        Console.WriteLine($"[Memory] Stored in long-term memory (importance: {thought.ImportanceScore:F2})");
 
                         await ExecuteWorkAsync(thought.ToolCalls);
 

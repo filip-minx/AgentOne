@@ -21,12 +21,25 @@ namespace Minx.AgentOne
             var tools = availableActuators.Select(actuator => actuator.GetToolDefinitions()).SelectMany(x => x).ToList();
 
             var systemPrompt =
-$@"You are a highly capable reasoning AI agent with integrated tool use functionality.
-When you receive a query, first analyze whether external tools (such as APIs or calculation functions) are needed to generate a complete and accurate response.
+$@"You are a highly capable reasoning AI agent with integrated tool use functionality and temporal awareness.
+When you receive sensory input, first analyze whether external tools (such as APIs or calculation functions) are needed to generate a complete and accurate response.
 If so, generate a tool call using the predefined JSON schema that specifies the function name and parameters.
 Always include a dedicated internal reasoning section between `<think>` and `</think>` tags before and after any tool invocation. Ensure your response remains clear,
 logically structured, and concise. If no tool is required, proceed with your internal reasoning and respond directly.
 The text you generate can not be seen by anyone other than you. When you need to convey any information, use the available actuators.
+
+TEMPORAL AWARENESS:
+You receive periodic time updates through your sensors. Use this temporal awareness to:
+- Track elapsed time since previous events (questions asked, actions taken, messages sent)
+- Take autonomous actions when appropriate (e.g., follow up on unanswered questions after reasonable time has passed)
+- Make time-sensitive decisions based on your memory of past events
+- Reason about timing and sequence of events from your complete memory history
+
+AUTONOMOUS ACTION:
+You can and should take initiative. You don't need to wait for external messages to act. Examples:
+- If you asked a question 1+ minutes ago and received no response, consider following up
+- If you're waiting for something, you can proactively check status or send reminders
+- You can make decisions and take actions based on time passing and your memory of past events
 
 Your available actuators are within the <Actuators></Actuators> XML tags.
 <Actuators>
@@ -38,7 +51,9 @@ Your available sensors are within the <Sensors></Sensors> XML tags.
 {GetSensorsInstructions(availableSensors)}
 </Sensors>
 
-The history of your sensory data is within the <Memory></Memory> XML tags. Think about the previous sensory data carefully. Base your next decision on the previous sensory data.
+COMPLETE MEMORY:
+All of your sensory data and all actions you've taken are stored in your memory. The history of your sensory data is within the <Memory></Memory> XML tags.
+Think carefully about the previous sensory data and your past actions. Base your next decision on your complete memory, including temporal patterns.
 <Memory>
 {GetShortTermMemoryInstructions(shortTermMemory)}
 </Memory>
@@ -130,16 +145,29 @@ The history of your sensory data is within the <Memory></Memory> XML tags. Think
                 importance += 0.4f;
             }
 
-            // Medium importance - tool calls indicate action
+            // Medium importance - tool calls indicate action (ALL actions should be remembered)
             if (toolCalls != null && toolCalls.Any())
             {
-                importance += 0.2f;
+                importance += 0.3f; // Increased from 0.2f to ensure actions are always stored
             }
 
             // Medium importance - questions or requests
             if (dataText.Contains("?") || ContainsAny(dataText, "please", "can you", "could you", "help", "tell me"))
             {
                 importance += 0.15f;
+            }
+
+            // Temporal reasoning indicators - time-based decisions are important
+            if (ContainsAny(thoughtText, "elapsed", "time", "waiting", "follow up", "check", "status", "ago", "since"))
+            {
+                importance += 0.15f;
+            }
+
+            // Time sensor data - base temporal awareness
+            if (data is TimeSensoryData)
+            {
+                // Time checks have moderate base importance for temporal context
+                importance = 0.4f;
             }
 
             // Low importance - simple greetings/acknowledgments
